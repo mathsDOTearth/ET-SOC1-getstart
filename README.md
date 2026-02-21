@@ -15,11 +15,11 @@ export PATH="/opt/et/bin:$PATH"
 ## Setup Build Area
 We want to create our own build area withing the et-platform directories, so first step is to set up the environment we need:
 ```bash
-mkdir -p ~/et-platform/rich-compute-kernels/{src/testbuild,build,scripts,shared}
-cd ~/et-platform/rich-compute-kernels
+mkdir -p ~/et-platform/ET-SOC1-getstarts/{src/testbuild,build,scripts,shared}
+cd ~/et-platform/ET-SOC1-getstarts
 ```
 
-The directory name `rich-compute-kernel` is basically my name and compute-kernels added together!  
+The directory name `ET-SOC1-getstart` is basically my name and compute-kernels added together!  
 I want to write a test program to test the build system (`src/testbuild`).  
 `build` is used by cmake and `scripts` will be for scripts used to run and benchmark the kernels we write.  
 
@@ -27,15 +27,15 @@ Next we copy shared files which the ET-Platform needs at compile time.  These fi
 
 ```bash
 cp -v ~/et-platform/test-compute-kernels/src/shared/sections.ld \
-      ~/et-platform/rich-compute-kernels/shared/sections.ld
+      ~/et-platform/ET-SOC1-getstarts/shared/sections.ld
 
 cp -v ~/et-platform/test-compute-kernels/src/shared/crt.S \
-      ~/et-platform/rich-compute-kernels/shared/crt.S
+      ~/et-platform/ET-SOC1-getstarts/shared/crt.S
 ```
 
 ## CMAKE files
 the ET-Platform SDK uses cmake files so it makes sense that we should used them too.  
-Lets create an initial ~/et-platform/rich-compute-kernels/CMakeLists.txt file:
+Lets create an initial ~/et-platform/ET-SOC1-getstarts/CMakeLists.txt file:
 ```cmake
 cmake_minimum_required(VERSION 3.20)
 project(rich_compute_kernels C ASM)
@@ -136,7 +136,7 @@ add_kernel_elf(testbuild "${CMAKE_SOURCE_DIR}/src/testbuild/testbuild.c")
 This cmake file is my best guesswork from looking at other CMakeLists.txt files within the ET-Platform SDK.
 
 # Create Dummy Test C code
-To get the initial build setup done, we create dummy c files `~/et-platform/rich-compute-kernels/src/testbuild/testbuild.c`
+To get the initial build setup done, we create dummy c files `~/et-platform/ET-SOC1-getstarts/src/testbuild/testbuild.c`
 ```c
 #include <etsoc/isa/hart.h>
 #include <stdint.h>
