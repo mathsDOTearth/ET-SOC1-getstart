@@ -258,3 +258,54 @@ And we should get an output like this:
 13: INFO EMU: [SYS-EMU] Emulation performance: 0.000075 cycles/sec (13 cycles / 0.173574 sec)
 13: INFO EMU: [SYS-EMU] Finishing emulation
 ```
+
+## What Just Happened
+The testbuild kernel is intentionally minimal, it performs one externally observable action (a single 32-bit store to a known physical address) and then halts progress by entering an infinite low-power wait loop. Its purpose is to validate three things at once:
+1. That you can build a valid ET-SOC-1 ELF kernel using the ET-Platform sdk.
+1. That the ELF Kernel built can run on the sw-sysemu software emulator.
+1. That the C code provided can run and the emulator can provide a trace.
+
+## Kernel Control Flow
+At a high level the C code does the following:
+* Determines the current thread id with `get_thread_id()`
+* If the thread is not thread 0, park it for ever with `wfi` (wait for interrupt)
+* If the thread is thread 0, then execute a single store instruction that writes `0x12345678` to address `0x8001100000`
+* After performing the memory write, park thread 0 using `wfi`
+
+## Why Use wfi
+`wfi` is a standard RISC-V instruction that puts the RISC-V hart (hardware thread) into a low power state, stalling all execution until an interupt occurs. 
+
+## How sys_emu Executes The Kernel
+### Loading and addressing
+The emulator reports:
+* the ELF is loaded ([SYS-EMU] Loading ELF)
+* a LOAD segment is mapped at 0x8005801000
+* the .text section is at 0x8005801000 and is 0x44 bytes
+
+This is the consequence of the linker script `sections.ld`, which fixes the kernel image into the ET-SoC-1 memory map. In this case the kernel is not position-independent `user code`, it is a statically located firmware payload.
+
+### Threads / “minions”
+The `sys_emu` emulator is invoked with `-minions 0x1 -shires 0x1`  
+
+In the log, you see two execution contexts:
+* [H0 S0:N0:C0:T0]
+* [H1 S0:N0:C0:T1]
+
+The important part is the final T0 vs T1: those are the two threads the emulator is running for the enabled minion. They both start at the same reset PC and execute the same instruction stream, diverging only via hartid-dependent control flow.
+
+### Startup sequence (crt)
+The first few instructions you see, `auipc`, `addi`and `jal`, are not from the C code but they are part of the startup path provided by `crt.S`. This stage is responsible for:
+* establishing a valid execution environment
+* branching to the entry_point
+* ensuring that only the “active” thread runs the kernel body while other threads can be parked
+
+You can see the start of that split when the trace reads the CSR hartid:
+```
+csrrs x15,hartid,x0
+...
+hartid : 0x0   (for T0)
+hartid : 0x1   (for T1)
+```
+
+The C code then calls `get_thread_id()`, which is effectively reflecting ther thread identity back to C.
+
