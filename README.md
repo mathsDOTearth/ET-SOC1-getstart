@@ -183,7 +183,8 @@ cmake --build build -j $(nproc)
 Hopefully the build worked and we can run our `testbuild` kernel:
 ```bash
 
-export ENTRY=$(riscv64-unknown-elf-readelf -h build/src/testbuild/testbuild.elf | awk '/Entry point address:/ {print $4}')
+export ENTRY=$(riscv64-unknown-elf-readelf -h build/src/testbuild/testbuild.elf | \
+      awk '/Entry point address:/ {print $4}')
 
 ~/et-platform/sw-sysemu/build/sys_emu -l \
   -minions 0x1 -shires 0x1 \
