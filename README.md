@@ -19,7 +19,7 @@ mkdir -p ~/et-platform/ET-SOC1-getstart/{src/testbuild,build,scripts,shared}
 cd ~/et-platform/ET-SOC1-getstart
 ```
 
-The directory name `ET-SOC1-getstart`.  
+The directory name `ET-SOC1-getstart`is used for this area, but I guess it could be anything.  
 I want to write a test program to test the build system (`src/testbuild`).  
 `build` is used by cmake and `scripts` will be for scripts used to run and benchmark the kernels we write.  
 
