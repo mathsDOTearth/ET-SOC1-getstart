@@ -169,6 +169,15 @@ void entry_point(const void* a)
     rich_idle_forever();
 }
 ```
+## Build The Test Kernel
+Next we use cmake to ceate the build directory contents and compile the code:
+```bash
+cmake -S . -B build   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=/opt/et/bin/riscv64-unknown-elf-gcc \
+  -DCMAKE_ASM_COMPILER=/opt/et/bin/riscv64-unknown-elf-gcc
+
+cmake --build build -j $(nproc)
+```
 
 ## Run The Test Kernels
 Hopefully the build worked and we can run our `testbuild` kernel:
