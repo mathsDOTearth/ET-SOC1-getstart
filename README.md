@@ -309,3 +309,40 @@ hartid : 0x1   (for T1)
 
 The C code then calls `get_thread_id()`, which is effectively reflecting ther thread identity back to C.
 
+## Interpreting The Output
+### Where the “other thread parks”
+
+```bash
+[H1 ... T1] I(M): ... wfi
+```
+
+This is the parked thread (thread 1). In the C code, any thread returning a non-zero `get_thread_id()` executes `rich_idle_forever()`, which is just a `for(;;) wfi;` loop. Durig execution, thread 1 reaches wfi quickly and stays there.
+
+### Where The Action Happens
+
+The proof of our memory write is:
+```bash
+MEM32[0x8001100000] = 0x12345678
+```
+
+This is output when the emulator processes the store instruction that writes to the chosen address of `0x8001100000`.  
+
+The surrounding lines show how the constant and address are handled:  
+
+The address `0x8001100000` is assembled via a combination of `lui`, `addi`, and `shift (c.slli)`, consistent with how RISC-V forms large immediates.  
+
+The data value `0x12345678` is likewise built via `lui` and `addiw`.
+
+Finally, a store occurs, `c.sd` in output. Despite the mnemonic shown, the emulator reports the 32-bit effect because the instrumentation is printing the 32-bit view at that address.
+
+### Why Execution Terminates
+
+After the store, thread 0 also reaches `wfi` and parks:
+```bash
+[H0 ... T0] ... wfi
+```
+
+At this point in the execution, both threads are quiescent and the emulator stops once it decides there is no further progress to simulate (or once any configured cycle limit is reached). The “Emulation performance” line is simply the emulator reporting its own throughput and is not a performance metric of the kernel.
+
+## The End 
+And there we have it, we have run a program on a virtual ET-SOC-1 which writes a single value to memory on a single thread.
