@@ -136,7 +136,7 @@ add_kernel_elf(testbuild "${CMAKE_SOURCE_DIR}/src/testbuild/testbuild.c")
 This cmake file is my best guesswork from looking at other CMakeLists.txt files within the ET-Platform SDK.
 
 # Create Dummy Test C code
-To get the initial build setup done, we create dummy c files `~/et-platform/ET-SOC1-getstart/src/testbuild/testbuild.c`
+To get the initial build setup done, we create a simple test program in C `~/et-platform/ET-SOC1-getstart/src/testbuild/testbuild.c`
 ```c
 #include <etsoc/isa/hart.h>
 #include <stdint.h>
