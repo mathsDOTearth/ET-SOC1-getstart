@@ -38,7 +38,7 @@ the ET-Platform SDK uses cmake files so it makes sense that we should used them 
 Lets create an initial ~/et-platform/ET-SOC1-getstart/CMakeLists.txt file:
 ```cmake
 cmake_minimum_required(VERSION 3.20)
-project(rich_compute_kernels C ASM)
+project(ET-SOC1-getstart C ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
