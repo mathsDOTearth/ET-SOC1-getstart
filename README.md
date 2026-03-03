@@ -1,3 +1,7 @@
+This is a much better getting started guide: [https://github.com/marty1885/et-testdrive](https://github.com/marty1885/et-testdrive)
+
+I will be updating mine under the influence of the above, but go there if you want the good stuff!
+
 # Getting Started With ET-SOC-1 Development
 
 These instructions are based on my own setup experience as someone new to the ET-Platform ecosystem.  Although you can develop on Windows, MacOS and many other systems, I currently used Ubuntu 25.10, so these instructions are based on that system.
